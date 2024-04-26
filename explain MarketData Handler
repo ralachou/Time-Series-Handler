@@ -1,0 +1,5 @@
+Explanation
+Fields for Data Storage: Two ArrayLists are created, one for prices and one for timestamps, to store the time series data.
+Add Data Method: Allows adding price and timestamp data.
+Latest Price Method: Retrieves the most recent price from the data.
+Calculate SMA Method: Computes the Simple Moving Average for a specified number of recent data points, which is a common calculation in financial time series analysis.
