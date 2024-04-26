@@ -1,0 +1,6 @@
+Class Creation: Using javassist.ClassPool, a new class called TimeSeries is created.
+Fields: Two fields, sum and count, are added to store the total sum of the time series data and the count of data points respectively.
+Methods:
+addData: Adds a new data value to the time series by updating sum and count.
+calculateAverage: Calculates the average of the time series data.
+Dynamic Class Use: The class is loaded and instantiated, and its methods are invoked using reflection. This allows you to interact with the dynamically created methods.
