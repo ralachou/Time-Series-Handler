@@ -1,0 +1,9 @@
+use the tablesaw library to create and manipulate a data structure similar to a DataFrame in Java.
+
+Explanation:
+DataFrame Creation: The DataFrame (Table in Tablesaw) is created with columns for Name, Age, and Salary. The Table.create method initializes the table with a name and columns.
+Adding Data: Columns are added with the initial data using the StringColumn.create and DoubleColumn.create methods. Data for each column is passed as arrays.
+Filtering Data: The DataFrame is filtered to only include rows where the salary is greater than 52,000. This uses the where method combined with a condition specified by isGreaterThan.
+Summary Statistics: The summary method is used to generate summary statistics for the Age column, providing insights like count, min, max, mean, etc.
+
+This example demonstrates basic operations with Tablesaw, making it a powerful tool for data manipulation in Java akin to pandas in Python. Tablesaw can handle larger datasets efficiently and supports a variety of data operations, making it suitable for data analysis tasks in Java environments.
