@@ -1,0 +1,11 @@
+Defining the Yield Curve Data Structure
+To represent a bond yield curve, we need:
+
+A class to represent individual bond data with attributes such as maturity and yield.
+A container to manage these bonds ordered by their maturity.
+
+Bond Class: This simple class represents a bond with two primary attributes: maturity (in years) and yield (as a percentage). These are kept private with getters provided for accessing them.
+YieldCurve Class: This class uses a TreeMap to map bond maturity to a Bond object. TreeMap is chosen because it naturally orders its keys, which in this case are the maturity years, ensuring that the bonds are sorted by their maturity. This is useful for operations that might require traversal of the yield curve in order of maturity.
+addOrUpdateBond: Adds a new bond to the curve or updates the yield of an existing bond with the same maturity.
+getBondByMaturity: Retrieves a bond's details based on its maturity.
+printCurve: Prints all bonds in the yield curve in order of their maturity.
