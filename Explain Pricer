@@ -1,0 +1,4 @@
+Explanation:
+NPV Calculation: The calculateNPV method computes the Net Present Value for given cash flows and a discount rate.
+IRR Calculation: The calculateIRR method approximates the Internal Rate of Return using the Newton-Raphson method, which is suitable for solving non-linear equations.
+Inflation Adjustment: The adjustForInflation method adjusts a series of prices based on an annual inflation rate.
