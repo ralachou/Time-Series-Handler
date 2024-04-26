@@ -4,3 +4,9 @@ Methods:
 addData: Adds a new data value to the time series by updating sum and count.
 calculateAverage: Calculates the average of the time series data.
 Dynamic Class Use: The class is loaded and instantiated, and its methods are invoked using reflection. This allows you to interact with the dynamically created methods.
+
+
+
+To generate dynamic classes and methods in Java, particularly for handling time series data, you can use the javassist library, which is part of the Java Programming Assistant. This library makes it possible to modify existing classes and to create new ones programmatically. The example I'll provide shows how to create a dynamic class that handles simple operations on time series data, like adding a new data point and calculating the average.
+
+First, you need to include the javassist library in your project. You can add it using Maven with the following dependency:
