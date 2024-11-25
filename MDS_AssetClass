@@ -1,0 +1,150 @@
+import pandas as pd
+import numpy as np
+from typing import List, Dict, Any
+
+
+class AssetClassInterface:
+    """
+    Base interface for handling specific asset class time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process the time series data specific to the asset class.
+
+        :param ts: DataFrame containing the time series.
+        :return: Processed DataFrame.
+        """
+        raise NotImplementedError("This method should be implemented by subclasses")
+
+
+class Equities(AssetClassInterface):
+    """
+    Interface for handling Equities time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        # Specific processing for equities, e.g., adjust for splits
+        ts["AdjustedValue"] = ts["Value"] * 1.02  # Example adjustment
+        return ts
+
+
+class Commodities(AssetClassInterface):
+    """
+    Interface for handling Commodities time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        # Specific processing for commodities, e.g., apply roll yields
+        ts["AdjustedValue"] = ts["Value"] * 0.98  # Example adjustment
+        return ts
+
+
+class InterestRates(AssetClassInterface):
+    """
+    Interface for handling Interest Rates (IR) time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        # Specific processing for interest rates, e.g., normalize values
+        ts["AdjustedValue"] = ts["Value"] / 100  # Normalize rates
+        return ts
+
+
+class ForeignExchange(AssetClassInterface):
+    """
+    Interface for handling FX time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        # Specific processing for FX, e.g., adjust for base currency
+        ts["AdjustedValue"] = ts["Value"] * 1.1  # Example base currency adjustment
+        return ts
+
+
+class Credit(AssetClassInterface):
+    """
+    Interface for handling Credit time series.
+    """
+
+    def process_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        # Specific processing for credit, e.g., calculate spread over benchmark
+        ts["Spread"] = ts["Value"] - ts["Value"].mean()  # Calculate spread
+        return ts
+
+
+# Main MDS Framework
+class MDS:
+    """
+    Market Data Service (MDS) Framework for handling time series in RFDM.
+    """
+
+    def __init__(self, app_server_connection: str):
+        self.connection = self._connect_to_server(app_server_connection)
+        self.time_series_cache = {}
+
+    def _connect_to_server(self, connection_string: str) -> Any:
+        """
+        Connect to the main application server.
+        """
+        return f"Connected to {connection_string}"
+
+    def get_time_series(self, code: str, codeType: str, category: str) -> pd.DataFrame:
+        """
+        Retrieve a time series.
+        """
+        # Mock data
+        data = {
+            "Date": pd.date_range(start="2024-10-01", periods=10),
+            "Value": np.random.rand(10),
+        }
+        ts = pd.DataFrame(data)
+        ts["Code"] = code
+        ts["CodeType"] = codeType
+        ts["Category"] = category
+        self.time_series_cache[code] = ts
+        return ts
+
+    def process_asset_class(self, ts: pd.DataFrame, asset_class: str) -> pd.DataFrame:
+        """
+        Process time series based on the asset class.
+
+        :param ts: DataFrame containing the time series.
+        :param asset_class: Asset class name (e.g., 'Equities', 'Commodities').
+        :return: Processed DataFrame.
+        """
+        asset_class_map = {
+            "Equities": Equities(),
+            "Commodities": Commodities(),
+            "InterestRates": InterestRates(),
+            "FX": ForeignExchange(),
+            "Credit": Credit(),
+        }
+        if asset_class not in asset_class_map:
+            raise ValueError(f"Unknown asset class: {asset_class}")
+        return asset_class_map[asset_class].process_time_series(ts)
+
+    def detect_outliers(self, ts: pd.DataFrame, threshold: float = 2.0) -> List[Dict[str, Any]]:
+        """
+        Detect outliers in the time series.
+        """
+        mean = ts["Value"].mean()
+        std_dev = ts["Value"].std()
+        outliers = ts[np.abs(ts["Value"] - mean) > threshold * std_dev]
+        return outliers.to_dict(orient="records")
+
+
+# Example Usage
+if __name__ == "__main__":
+    mds = MDS(app_server_connection="TimeDX_Server")
+    print(mds.connection)
+
+    ts = mds.get_time_series("AAPL", "Instrument", "Price")
+    processed_equities = mds.process_asset_class(ts, "Equities")
+    print("Processed Equities Time Series:\n", processed_equities)
+
+    processed_fx = mds.process_asset_class(ts, "FX")
+    print("Processed FX Time Series:\n", processed_fx)
+
+    outliers = mds.detect_outliers(ts)
+    print("Detected Outliers:\n", outliers)
