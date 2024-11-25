@@ -1,0 +1,119 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+
+# Framework definition
+class MDS:
+    """
+    Market Data Service (MDS) Framework for handling time series in RFDM.
+    """
+    def __init__(self, app_server_connection: str):
+        """
+        Initialize the MDS with connection to the main App Server holding time series data.
+
+        :param app_server_connection: Connection string for the App Server.
+        """
+        self.connection = self._connect_to_server(app_server_connection)
+        self.time_series_cache = {}
+
+    def _connect_to_server(self, connection_string: str) -> Any:
+        """
+        Connect to the main application server.
+
+        :param connection_string: Connection details.
+        :return: Connection object.
+        """
+        # Placeholder for timeDX connection logic
+        return f"Connected to {connection_string}"
+
+    # API to fetch a time series by code, codeType, and category
+    def get_time_series(self, code: str, codeType: str, category: str) -> pd.DataFrame:
+        """
+        Retrieve a time series based on code, codeType, and category.
+
+        :param code: Unique identifier for the time series.
+        :param codeType: Type of the code (e.g., 'Instrument', 'Curve').
+        :param category: Category of the time series (e.g., 'Price', 'Risk').
+        :return: DataFrame containing the time series.
+        """
+        # Mock data fetching
+        data = {
+            "Date": pd.date_range(start="2024-10-01", periods=10),
+            "Value": np.random.rand(10),
+        }
+        ts = pd.DataFrame(data)
+        ts["Code"] = code
+        ts["CodeType"] = codeType
+        ts["Category"] = category
+        self.time_series_cache[code] = ts
+        return ts
+
+    # API to interpolate missing data in a time series
+    def interpolate_time_series(self, ts: pd.DataFrame) -> pd.DataFrame:
+        """
+        Interpolate missing values in the time series.
+
+        :param ts: DataFrame containing the time series.
+        :return: DataFrame with interpolated values.
+        """
+        ts["Value"] = ts["Value"].interpolate(method="linear")
+        return ts
+
+    # API to detect outliers in a time series
+    def detect_outliers(self, ts: pd.DataFrame, threshold: float = 2.0) -> List[Dict[str, Any]]:
+        """
+        Detect outliers in a time series using a threshold.
+
+        :param ts: DataFrame containing the time series.
+        :param threshold: Threshold for detecting outliers.
+        :return: List of outliers.
+        """
+        mean = ts["Value"].mean()
+        std_dev = ts["Value"].std()
+        outliers = ts[np.abs(ts["Value"] - mean) > threshold * std_dev]
+        return outliers.to_dict(orient="records")
+
+    # API to compare and contrast two time series
+    def compare_time_series(self, ts1: pd.DataFrame, ts2: pd.DataFrame) -> pd.DataFrame:
+        """
+        Compare two time series and highlight differences.
+
+        :param ts1: DataFrame for the first time series.
+        :param ts2: DataFrame for the second time series.
+        :return: DataFrame showing differences.
+        """
+        comparison = ts1.merge(ts2, on="Date", suffixes=("_TS1", "_TS2"))
+        comparison["Difference"] = comparison["Value_TS1"] - comparison["Value_TS2"]
+        return comparison
+
+    # API to fetch and manipulate a time series
+    def fetch_and_process_time_series(self, code: str, codeType: str, category: str) -> pd.DataFrame:
+        """
+        Fetch a time series and process it (e.g., interpolate and detect outliers).
+
+        :param code: Code of the time series.
+        :param codeType: Type of the code.
+        :param category: Category of the time series.
+        :return: Processed time series DataFrame.
+        """
+        ts = self.get_time_series(code, codeType, category)
+        ts = self.interpolate_time_series(ts)
+        outliers = self.detect_outliers(ts)
+        if outliers:
+            print(f"Outliers detected: {outliers}")
+        return ts
+
+# Example Usage
+if __name__ == "__main__":
+    mds = MDS(app_server_connection="TimeDX_Server")
+    print(mds.connection)
+
+    ts1 = mds.get_time_series("AAPL", "Instrument", "Price")
+    ts2 = mds.get_time_series("MSFT", "Instrument", "Price")
+
+    ts1_interpolated = mds.interpolate_time_series(ts1)
+    outliers_ts1 = mds.detect_outliers(ts1_interpolated)
+
+    comparison = mds.compare_time_series(ts1, ts2)
+    print("Comparison Result:", comparison)
